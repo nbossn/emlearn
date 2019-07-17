@@ -1,13 +1,14 @@
 import numpy as np
-from absl import flags
+from absl import app, flags
 from cuml.manifold.umap import UMAP
 
 FLAGS = flags.FLAGS
-
+flags.DEFINE_string("umap_take_embeddings", None,
+                    "embeddings to generate UMAP from")
 flags.DEFINE_string("umap_path", "umap", "path to export UMAP")
 flags.DEFINE_float("umap_n_neighbors", 15.0, "nearest neighbors")
-flags.DEFINE_integer("umap_n_components", 3, "number of components")  # default is 2
-flags.DEFINE_integer("umap_n_epochs", 200, "number of epochs")  # default is None
+flags.DEFINE_integer("umap_n_components", 3, "number of components")
+flags.DEFINE_integer("umap_n_epochs", 200, "number of epochs")
 flags.DEFINE_float("umap_learning_rate", 1.0, "learning rate")
 flags.DEFINE_string("umap_init", 'spectral', "dimension initialization")
 flags.DEFINE_float("umap_min_dist", 0.1, "minimum distance")
@@ -47,3 +48,13 @@ class GenerateUMAP:
                    verbose=FLAGS.umap_verbose
                    ).fit_transform(self.features)
         return map
+
+
+def main(argv):
+    del argv  # unused
+    embeddings = np.load(FLAGS.umap_take_embeddings)
+    GenerateUMAP(embeddings['files'], embeddings['pca_embeddings'])
+
+
+if __name__ == "__main__":
+    app.run(main)
