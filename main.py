@@ -12,7 +12,7 @@ from pca import GeneratePCAEmbeddings
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('input_images', None, 'path to folder of images')
-flags.mark_flag_as_required('images_path')
+flags.mark_flag_as_required('input_images')
 
 # ray.init(redis_address="localhost:6379")
 
@@ -22,8 +22,8 @@ def main(argv):
     embeddings = GenerateEmbeddings(FLAGS.input_images)
     pca_embeddings = GeneratePCAEmbeddings(embeddings.files,
                                            embeddings.features)
-    umap_gen = GenerateUMAP(pca_embeddings.files,
-                            pca_embeddings.PCA_embeddings)
+    umap = GenerateUMAP(pca_embeddings.files,
+                        pca_embeddings.PCA_embeddings)
 
 
 if __name__ == "__main__":
