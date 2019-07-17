@@ -27,6 +27,7 @@ class GenerateEmbeddings:
         self.session = tf.Session()
         self.files, self.features = self.create_embeddings(image_folder_path)
         self.session.close()
+        tf.compat.v1.reset_default_graph()
         np.savez(FLAGS.embeddings_output_filename,
                  files=self.files,
                  features=self.features)
