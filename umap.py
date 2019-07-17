@@ -3,9 +3,10 @@ from absl import app, flags
 from cuml.manifold.umap import UMAP
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("umap_take_embeddings", None,
+flags.DEFINE_string("umap_input_embeddings",
+                    None,
                     "embeddings to generate UMAP from")
-flags.DEFINE_string("umap_path", "umap", "path to export UMAP")
+flags.DEFINE_string("umap_output_filename", "umap", "path to export UMAP")
 flags.DEFINE_float("umap_n_neighbors", 15.0, "nearest neighbors")
 flags.DEFINE_integer("umap_n_components", 3, "number of components")
 flags.DEFINE_integer("umap_n_epochs", 200, "number of epochs")
@@ -26,7 +27,7 @@ class GenerateUMAP:
         self.files = files
         self.features = features
         self.umap = self.create_umap(self.features)
-        np.savez(FLAGS.umap_path, files=files, umap=self.umap)
+        np.savez(FLAGS.umap_output_filename, files=files, umap=self.umap)
 
     # @ray.remote
     def create_umap(self, features):
@@ -52,7 +53,7 @@ class GenerateUMAP:
 
 def main(argv):
     del argv  # unused
-    embeddings = np.load(FLAGS.umap_take_embeddings)
+    embeddings = np.load(FLAGS.umap_input_embeddings)
     GenerateUMAP(embeddings['files'], embeddings['pca_embeddings'])
 
 

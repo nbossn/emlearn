@@ -5,8 +5,11 @@ from absl import app, flags
 from cuml.decomposition import PCA
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('raw_embeddings_path', None, 'path to raw embeddings')
-flags.DEFINE_string("pca_embeddings_path", "pca_embeddings",
+flags.DEFINE_string('pca_input_embeddings',
+                    None,
+                    'path to raw embeddings')
+flags.DEFINE_string('pca_output_embeddings_filename',
+                    'pca_embeddings',
                     "filename to save embeddings as")
 flags.DEFINE_integer("pca_n_components", 512, "length of PCA embeddings")
 flags.DEFINE_string("pca_svd_solver", "full", "PCA svd solver")
@@ -23,7 +26,7 @@ class GeneratePCAEmbeddings:
         self.files = files
         self.features = features
         self.PCA_embeddings = self.generate_PCA(self.features)
-        np.savez(FLAGS.pca_embeddings_path,
+        np.savez(FLAGS.pca_output_embeddings_filename,
                  files=self.files,
                  pca_embeddings=self.PCA_embeddings)
 
@@ -41,7 +44,7 @@ class GeneratePCAEmbeddings:
 
 def main(argv):
     del argv  # unused
-    embeddings = np.load(FLAGS.raw_embeddings_path)
+    embeddings = np.load(FLAGS.pca_input_embeddings)
     GeneratePCAEmbeddings(embeddings['files'], embeddings['features'])
 
 

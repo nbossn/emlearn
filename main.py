@@ -9,19 +9,21 @@ from pca import GeneratePCAEmbeddings
 # implement ray
 # load model from a tensorflow file as absl arg
 # resize images if necessary
-# provide pipeline to allow execution at multiple stages
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('images_path', None, 'path to folder of images')
+flags.DEFINE_string('input_images', None, 'path to folder of images')
 flags.mark_flag_as_required('images_path')
 
 # ray.init(redis_address="localhost:6379")
 
+
 def main(argv):
     del argv  # unused
-    embeddings = GenerateEmbeddings(FLAGS.images_path)
-    pca_embeddings = GeneratePCAEmbeddings(embeddings.files, embeddings.features)
-    umap_gen = GenerateUMAP(pca_embeddings.files, pca_embeddings.PCA_embeddings)
+    embeddings = GenerateEmbeddings(FLAGS.input_images)
+    pca_embeddings = GeneratePCAEmbeddings(embeddings.files,
+                                           embeddings.features)
+    umap_gen = GenerateUMAP(pca_embeddings.files,
+                            pca_embeddings.PCA_embeddings)
 
 
 if __name__ == "__main__":

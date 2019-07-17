@@ -9,10 +9,12 @@ from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
 from tensorflow.keras.models import Model
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('embeddings_images_path', None, 'path to folder of images')
-flags.DEFINE_string("embeddings_export_path",
-                    "raw_embeddings",
-                    "path to export embeddings")
+flags.DEFINE_string('embeddings_input_images',
+                    None,
+                    'path to folder of images')
+flags.DEFINE_string("embeddings_output_filename",
+                    "tensorflow_embeddings",
+                    "filename to export embeddings as")
 
 
 class GenerateEmbeddings:
@@ -24,7 +26,8 @@ class GenerateEmbeddings:
                            outputs=self.base_model.get_layer('fc2').output)
         self.session = tf.Session()
         self.files, self.features = self.create_embeddings(image_folder_path)
-        np.savez(FLAGS.embeddings_export_path,
+        self.session.close()
+        np.savez(FLAGS.embeddings_output_filename,
                  files=self.files,
                  features=self.features)
 
@@ -44,14 +47,13 @@ class GenerateEmbeddings:
         for raw_images, file_paths, total in load(image_folder):
             features_deque.extend(self.get_features(raw_images))
             names_deque.extend(file_paths)
-        self.session.close()
         return np.array(names_deque, np.unicode_), \
             np.array(features_deque, np.float32)
 
 
 def main(argv):
     del argv  # unused
-    GenerateEmbeddings(FLAGS.embeddings_images_path)
+    GenerateEmbeddings(FLAGS.embeddings_input_images)
 
 
 if __name__ == "__main__":
